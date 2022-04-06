@@ -9,12 +9,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +25,21 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import cz.krajcovic.dancingminnie.repositories.PicturesRepository
+import cz.krajcovic.dancingminnie.services.LongRunningService
 import cz.krajcovic.dancingminnie.ui.theme.DancingMinnieTheme
+import cz.krajcovic.dancingminnie.viewmodels.MinnieViewModelImpl
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var appController: AppContainer
+    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,39 +48,34 @@ class MainActivity : ComponentActivity() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+        // Gets userRepository from the instance of AppContainer in Application
+//        val appController = (application as DancingMinnieApplication).appController
+//        DaggerDancingMinnieApplication_HiltComponents_SingletonC.builder()
+//        (application as DancingMinnieApplication).appGraph.viewModel.getDrawable()
+        
+
+        // Create an instance of the application graph
+//        val appGraph: AppGraph = DaggerAppGraph.create()
 
         setContent {
-            MainContent()
+//            MainContent(appController.viewModel.getDrawable())
+//            MainContent(appGraph.viewModel.getDrawable())
+            MainContent(drawableList = (application as DancingMinnieApplication).appGraph.viewModel.getDrawable())
         }
-    }
-
-    companion object {
-        val gifList = listOf(
-            R.drawable.minnie_mouse_kiss,
-            R.drawable.minnie_mouse_minnie,
-            R.drawable.minnie_mouse_please
-        )
     }
 }
 
 @Composable
-fun MainContent() {
+fun MainContent(drawableList: List<Int>) {
     DancingMinnieTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-//            Greeting("Android")
-//            PlayGif((0 until MainActivity.gifList.size).random())
-            PlayList()
+            PlayList(drawableList)
         }
     }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
 }
 
 fun getImageLoader(context: Context): ImageLoader {
@@ -86,24 +90,6 @@ fun getImageLoader(context: Context): ImageLoader {
         .build()
 
     return imageLoader
-}
-
-@Composable
-fun PlayList() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-//        PlayGif(idGif = R.drawable.minnie_mouse_kiss)
-//        item(0, MainActivity.gifList[0])
-//        items(MainActivity.gifList.subList(0,1)) { image ->
-//            PlayGif(idGif = image)
-//        }
-        MainActivity.gifList.forEach {
-            PlayGif(idGif = it)
-        }
-    }
 }
 
 @ExperimentalCoilApi
@@ -132,8 +118,22 @@ fun PlayGif(idGif: Int) {
     }
 }
 
+@Composable
+fun PlayList(drawableList: List<Int>) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        drawableList.forEach {
+            item { PlayGif(idGif = it) }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MainContent()
+    MainContent(MinnieViewModelImpl(PicturesRepository(LongRunningService())).getDrawable())
 }
+
