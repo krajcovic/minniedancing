@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://nexus3-public.monetplus.cz/repository/ahead-talsec-free-rasp" }
     }
 }
 rootProject.name = "DancingMinnie"

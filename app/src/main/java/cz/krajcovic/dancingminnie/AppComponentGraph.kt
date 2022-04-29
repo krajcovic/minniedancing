@@ -15,7 +15,7 @@ import javax.inject.Singleton
 //        MinnieViewModelImpl::class,
     ]
 )
-interface AppGraph {
+interface AppComponentGraph {
 //    // The return type  of functions inside the component interface is
 //    // what can be provided from the container
     fun repository() : PicturesRepository

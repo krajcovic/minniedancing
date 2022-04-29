@@ -64,7 +64,23 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timber_version"
 
     implementation("com.google.dagger:hilt-android:2.38.1")
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
     kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+
+    // Talsec Release
+    releaseImplementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:3.3.2-release'
+//    debugImplementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:3.3.2-release'
+
+    // Talsec Debug
+//    releaseImplementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:3.3.2-dev'
+    debugImplementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:3.3.2-dev'
+
+    // Import the BoM for the Firebase platform (learn more)
+    implementation platform('com.google.firebase:firebase-bom:29.3.0')
+
+    // Declare the KTX library instead (which automatically has a dependency on the base library)
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

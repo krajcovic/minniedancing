@@ -4,6 +4,7 @@ buildscript {
         coil_compose_version = '1.4.0'
         timber_version = '5.0.1'
     }
+
     dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
     }

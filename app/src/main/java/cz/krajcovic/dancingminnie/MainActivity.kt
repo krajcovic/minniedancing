@@ -36,8 +36,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var appController: AppContainer
+//    @Inject
+//    lateinit var appController: AppContainer
     
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,9 +60,13 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            MainContent(appController.viewModel.getDrawable())
 //            MainContent(appGraph.viewModel.getDrawable())
-            MainContent(drawableList = (application as DancingMinnieApplication).appGraph.viewModel.getDrawable())
+            MainContent(drawableList = getDrawable())
         }
     }
+
+    @Composable
+    private fun getDrawable() =
+        (application as TalsecApplication).appComponentGraph.viewModel.getDrawable()
 }
 
 @Composable
