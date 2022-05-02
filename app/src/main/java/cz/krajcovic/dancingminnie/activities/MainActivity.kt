@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
 //    @Inject
 //    lateinit var appController: AppContainer
-    
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 //        val appController = (application as DancingMinnieApplication).appController
 //        DaggerDancingMinnieApplication_HiltComponents_SingletonC.builder()
 //        (application as DancingMinnieApplication).appGraph.viewModel.getDrawable()
-        
+
 
         // Create an instance of the application graph
 //        val appGraph: AppGraph = DaggerAppGraph.create()
@@ -60,24 +60,28 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            MainContent(appController.viewModel.getDrawable())
 //            MainContent(appGraph.viewModel.getDrawable())
-            MainContent(drawableList = getDrawable())
+            MainContent(getViewModel())
         }
     }
 
-    @Composable
+    private fun getViewModel() = (application as TalsecApplication).appComponentGraph.viewModel
+
     private fun getDrawable() =
         (application as TalsecApplication).appComponentGraph.viewModel.getDrawable()
+
+    private fun getNegative() =
+        (application as TalsecApplication).appComponentGraph.viewModel.getNegative()
 }
 
 @Composable
-fun MainContent(drawableList: List<Int>) {
+fun MainContent(viewModel: MinnieViewModelImpl) {
     DancingMinnieTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            PlayList(drawableList)
+            PlayList(viewModel)
         }
     }
 }
@@ -98,19 +102,37 @@ fun getImageLoader(context: Context): ImageLoader {
 
 @ExperimentalCoilApi
 @Composable
-fun PlayGif(idGif: Int) {
+fun PlayGif(idGifPositive: Int, idGifNegative: Int) {
     Card(
         shape = RoundedCornerShape(20.dp)
     ) {
         var isClicked by remember { mutableStateOf(false) }
-        if(!isClicked) {
+        if (!isClicked) {
             Image(
                 modifier = Modifier.clickable {
                     isClicked = !isClicked
                 },
                 painter = rememberImagePainter(
                     imageLoader = getImageLoader(LocalContext.current),
-                    data = idGif,
+                    data = idGifPositive,
+                    builder = {
+                        size(
+                            LocalConfiguration.current.screenWidthDp / 3,
+                            LocalConfiguration.current.screenHeightDp / 3
+                        )
+                    }
+
+                ),
+                contentDescription = null,
+            )
+        } else {
+            Image(
+                modifier = Modifier.clickable {
+                    isClicked = !isClicked
+                },
+                painter = rememberImagePainter(
+                    imageLoader = getImageLoader(LocalContext.current),
+                    data = idGifNegative,
                     builder = {
                         size(
                             LocalConfiguration.current.screenWidthDp / 3,
@@ -126,14 +148,18 @@ fun PlayGif(idGif: Int) {
 }
 
 @Composable
-fun PlayList(drawableList: List<Int>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        drawableList.forEach {
-            item { PlayGif(idGif = it) }
+fun PlayList(viewModel: MinnieViewModelImpl) {
+    Row() {
+        repeat(2) {
+            LazyColumn(
+//        modifier = Modifier.fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center,
+            ) {
+                viewModel.getDrawable().forEach {
+                    item { PlayGif(idGifPositive = it, viewModel.getNegative()) }
+                }
+            }
         }
     }
 }
@@ -141,6 +167,8 @@ fun PlayList(drawableList: List<Int>) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MainContent(MinnieViewModelImpl(PicturesRepository(LongRunningService())).getDrawable())
+    val repository = PicturesRepository(LongRunningService())
+    val viewModel = MinnieViewModelImpl(repository)
+    MainContent(viewModel)
 }
 

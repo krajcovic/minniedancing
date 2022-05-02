@@ -8,4 +8,8 @@ class MinnieViewModelImpl @Inject constructor(private val picturesRepository: Pi
     fun getDrawable(): List<Int> {
         return picturesRepository.getDrawable()
     }
+
+    fun getNegative(): Int {
+        return picturesRepository.getNegative()
+    }
 }
