@@ -1,4 +1,4 @@
-package cz.krajcovic.dancingminnie
+package cz.krajcovic.dancingminnie.activities
 
 import android.content.Context
 import android.os.Build.VERSION.SDK_INT
@@ -10,9 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +23,8 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import cz.krajcovic.dancingminnie.BuildConfig
+import cz.krajcovic.dancingminnie.TalsecApplication
 import cz.krajcovic.dancingminnie.repositories.PicturesRepository
 import cz.krajcovic.dancingminnie.services.LongRunningService
 import cz.krajcovic.dancingminnie.ui.theme.DancingMinnieTheme
@@ -103,22 +103,25 @@ fun PlayGif(idGif: Int) {
         shape = RoundedCornerShape(20.dp)
     ) {
         var isClicked by remember { mutableStateOf(false) }
-        Image(
-            modifier = Modifier.clickable {
-                isClicked != isClicked
-            },
-            painter = rememberImagePainter(
-                imageLoader = getImageLoader(LocalContext.current),
-                data = idGif,
-                builder = {
-                    size(
-                        LocalConfiguration.current.screenWidthDp / 3,
-                        LocalConfiguration.current.screenHeightDp / 3
-                    )
-                }
-            ),
-            contentDescription = null,
-        )
+        if(!isClicked) {
+            Image(
+                modifier = Modifier.clickable {
+                    isClicked = !isClicked
+                },
+                painter = rememberImagePainter(
+                    imageLoader = getImageLoader(LocalContext.current),
+                    data = idGif,
+                    builder = {
+                        size(
+                            LocalConfiguration.current.screenWidthDp / 3,
+                            LocalConfiguration.current.screenHeightDp / 3
+                        )
+                    }
+
+                ),
+                contentDescription = null,
+            )
+        }
     }
 }
 
